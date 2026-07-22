@@ -29,7 +29,7 @@ Used live on [twitch.tv/Caxyhh](https://twitch.tv/Caxyhh).
 
 | Part | Notes |
 |---|---|
-| [DJI Pocket 4](https://www.dji.com/osmo-pocket-4) | Connects over its own WiFi hotspot |
+| [DJI Pocket 4](https://www.dji.com/osmo-pocket-4) | Connects to a WiFi hotspot hosted on the BELAbox |
 | DJI Pocket 4 battery handle | Doubles as a USB-C hub. Batteries hot-swap mid-stream without dropping the camera feed |
 | Spare handle battery | One battery lasts ~2.5–3 hours of streaming. Two on rotation — swap, put the empty one on charge — keeps you going all day |
 | [DJI Mic 3 (TX + RX)](https://www.dji.com/mic-3) | See notes on the receiver below |
@@ -46,17 +46,6 @@ Used live on [twitch.tv/Caxyhh](https://twitch.tv/Caxyhh).
 
 You can go for 5G modules instead, but they cost a good deal more and draw more power. 4G has been enough for my use.
 
-
-### Server side
-
-This is my self-hosted setup — the SLS part only applies if you run your own receiver. If you use [BELABOX Cloud](https://belabox.net/cloud) instead (see [Receiver side](#receiver-side) below), you just need OBS.
-
-| Component | Notes |
-|---|---|
-| Ubuntu server running SRT Live Server (SLS) | Receives SRT, republishes to OBS |
-| OBS | Scenes and overlays |
-| [Stream-Control](https://github.com/kimsec/Stream-Control) | OBS scene switching, restream management, bitrate automation, raid auto-stop etc. |
-| [Unified-Chat](https://github.com/kimsec/unified-chat) | Twitch / YouTube / Kick chat in one place with moderation |
 
 ---
 
@@ -77,7 +66,7 @@ BELABOX recommends 1500–2500ms SRT latency. Lower than that and you get more g
 
 You need two WiFi radios: one for the Pocket 4, one for WiFi offloading.
 
-The Pocket 4 connects to its own hotspot, ideally on 5GHz. If that occupies your only radio, the board can't connect to any other network — which means no WiFi offloading. When you're at home or somewhere with decent WiFi, you want the stream going out over that instead of mobile data, and when you walk out of range the switch to LTE should happen seamlessly without dropping the stream.
+The Pocket 4 connects to a hotspot hosted on the belabox with the USB dongle, ideally on 5GHz. If that hotspot occupies your only radio, the board can't connect to any other network — which means no WiFi offloading. When you're at home or somewhere with decent WiFi, you want the stream going out over that instead of mobile data, and when you walk out of range the switch to LTE should happen seamlessly without dropping the stream.
 
 - **USB dongle** → Pocket 4 hotspot
 - **On-board WiFi** → home/venue network for uplink
@@ -95,16 +84,22 @@ The Pocket 4 connects to its own hotspot, ideally on 5GHz. If that occupies your
 6. Point BELABOX at your SRTLA receiver — address, port and stream ID go in the BELABOX UI under relay settings
 7. Pull the SRT feed into OBS as a media source
 
-> **Have a DJI Pocket 3 instead?** Skip step 2 — no patch needed. The Osmo Pocket 3 livestreams **H.264** over RTMP, which stock BELABOX already accepts, so the standard RTMP pipeline just works. Set up the livestream through the DJI Mimo app, connect the camera to the hotspot, and point it at the same `rtmp://<belabox-address>:1935/publish/live` URL. Note that the Pocket 3's RTMP livestream tops out at 1080p30. The patch exists only because the Pocket 4 sends HEVC with legacy codec ID 12.
+> **Have a DJI Pocket 3 instead?** Skip step 2 — no patch needed. The Osmo Pocket 3 livestreams **H.264** over RTMP, which stock BELABOX already accepts, so the standard RTMP pipeline just works. Set up the livestream through the DJI Mimo app, connect the camera to the hotspot, and point it at the same `rtmp://<belabox-address>:1935/publish/live` URL. Note that the Pocket 3's RTMP livestream tops out at 1080p30.
 
 ### Receiver side
 
 You need something to receive the SRTLA stream and hand it to OBS. Two options:
 
 - **[BELABOX Cloud](https://belabox.net/cloud)** — hosted relay, no setup, small monthly cost. Start here if you don't want to run a server.
-- **Self-hosted** — [srtla](https://github.com/BELABOX/srtla) receiver plus [SRT Live Server](https://github.com/Edward-Wu/srt-live-server). More work, more control.
+- **Self-hosted** — [srtla](https://github.com/BELABOX/srtla) receiver plus [SRT Live Server](https://github.com/Edward-Wu/srt-live-server) on a Linux box, republishing to OBS. More work, more control. Note that OBS needs a desktop environment — I run Xubuntu, with OBS on the same machine.
 
-I run [Stream-Control](https://github.com/kimsec/Stream-Control) on top for scene switching, restream management and bitrate automation.
+On top of OBS I run:
+
+| Component | Notes |
+|---|---|
+| [Stream-Control](https://github.com/kimsec/Stream-Control) | OBS scene switching, restream management, bitrate automation, raid auto-stop etc. |
+| [Unified-Chat](https://github.com/kimsec/unified-chat) | Twitch / YouTube / Kick chat in one place with moderation |
+| [Unified-Chat-Lite](https://github.com/kimsec/unified-chat-lite) | Don't need moderation? Same combined chat (plus TikTok), read-only and very easy to self-host — or skip hosting entirely and use it at [unified-chat.com](https://unified-chat.com) |
 
 ---
 
@@ -164,7 +159,7 @@ server {
 
 </details>
 
-> **A word of caution:** exposing belaUI to the internet means anyone who finds the URL can try to log in to your encoder. Put something in front of it — [Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/policies/access/), mTLS client certificates (`ssl_verify_client` in nginx), or at the very least a strong password and a non-obvious hostname. If securing internet-facing services isn't something you're comfortable with yet, no shame in that — just skip this section. belaUI works fine over plain HTTP on the local network, and [BELABOX Cloud](https://belabox.net/cloud) gives you remote control without exposing anything yourself.
+> **A word of caution:** exposing belaUI to the internet means anyone who finds the URL can try to log in to your encoder. Put [Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/policies/access/) in front of it, or at the very least a strong password and a non-obvious hostname. If securing internet-facing services isn't something you're comfortable with yet, no shame in that — just skip this section: belaUI works fine on the local network, and [BELABOX Cloud](https://belabox.net/cloud) gives you remote control without exposing anything yourself.
 
 ---
 
