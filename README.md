@@ -95,6 +95,8 @@ The Pocket 4 connects to its own hotspot, ideally on 5GHz. If that occupies your
 6. Point BELABOX at your SRTLA receiver — address, port and stream ID go in the BELABOX UI under relay settings
 7. Pull the SRT feed into OBS as a media source
 
+> **Have a DJI Pocket 3 instead?** Skip step 2 — no patch needed. The Osmo Pocket 3 livestreams **H.264** over RTMP, which stock BELABOX already accepts, so the standard RTMP pipeline just works. Set up the livestream through the DJI Mimo app, connect the camera to the hotspot, and point it at the same `rtmp://<belabox-address>:1935/publish/live` URL. Note that the Pocket 3's RTMP livestream tops out at 1080p30. The patch exists only because the Pocket 4 sends HEVC with legacy codec ID 12.
+
 ### Receiver side
 
 You need something to receive the SRTLA stream and hand it to OBS. Two options:
