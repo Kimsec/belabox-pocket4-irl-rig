@@ -39,8 +39,8 @@ Used live on [twitch.tv/Caxyhh](https://twitch.tv/Caxyhh).
 | Part | Notes |
 |---|---|
 | SIM card(s) | Separate carriers if you want redundancy |
-| Upgraded WiFi antennas | I use Delock 802.11 ac/a/b/g/n RP-SMA male 2–5 dBi. Any RP-SMA antenna works — it's the pigtail below that has to match the board |
-| Antenna pigtail | Delock RP-SMA female panel-mount to I-PEX MHF4 female 0.81. The Rock 5B+ WiFi module uses **I-PEX MHF4** connectors, so this is what gets the signal from the board out to a panel-mounted antenna |
+| Upgraded WiFi antennas | I use Delock 802.11 ac/a/b/g/n RP-SMA 2–5 dBi. Any RP-SMA antenna works — check that the antenna has a hole in the centre of the connector and the pigtail has a pin, so they mate |
+| Antenna pigtail | Delock RP-SMA panel-mount to I-PEX MHF4 0.81. The Rock 5B+ WiFi module uses **I-PEX MHF4** connectors, so this is what gets the signal from the board out to a panel-mounted antenna |
 | [USB WiFi dongle](https://www.tp-link.com/us/home-networking/usb-adapter/archer-t2u-nano/) | TP-Link Archer T2U Nano — second radio, dedicated to the Pocket 4 hotspot |
 | [Quectel EC25-EUX M.2 LTE Cat 4 w/ antennas](https://www.aliexpress.com/item/1005011702787046.html) | With SIM slot. **EUX is the Europe variant** — pick the one that matches your region and carrier bands |
 
